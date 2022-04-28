@@ -1,6 +1,7 @@
-interface MemoryCard {
-    id: String;
-    title: String;
-    image: String;
-    set: Boolean;
+export interface MemoryCard {
+    cardId: string;
+    image: string;
+    count: number;
+    selected: boolean;
+    set: boolean;
 }

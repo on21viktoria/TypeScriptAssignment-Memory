@@ -3,17 +3,24 @@
     grid-template-columns: auto auto auto auto;
     background-color: aliceblue;
     padding: 10px;
-    width: 500px;
-    height: 500px;
+    width: 400px;
+    height: 400px;
 }
 
 .grid-item {
     background-color: aquamarine;
     border: 1px solid black;
-    padding: 20px;
+    border-radius: 10px;
+    padding: 5px;
     text-align: center;
+    margin: 5px;
 }
 
 img {
     width: 100%;
+    border-radius: 10px;
+}
+
+.selected {
+    background-color: brown;
 }
