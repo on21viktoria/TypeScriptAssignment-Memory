@@ -82,7 +82,7 @@ function assignRandomSpotsForCards(): void {
   for (let i = 0; i < cardsContainers.length; i++) {
     cardsContainers[i].setAttribute("src", memoryCardsSpots[i].image);
     cardsContainers[i].setAttribute("alt", memoryCardsSpots[i].cardId);
-    cardsContainers[i].setAttribute("data-id", memoryCardsSpots[i].cardId);
+    cardsContainers[i].setAttribute("name", memoryCardsSpots[i].cardId);
   }
 }
 
@@ -108,8 +108,8 @@ function selectCard(e: UIEvent) {
 
 function checkforMatch() {
   if (
-    selectedCards[0].getAttribute("data-id") ===
-    selectedCards[1].getAttribute("data-id")
+    selectedCards[0].getAttribute("name") ===
+    selectedCards[1].getAttribute("name")
   ) {
     console.log("Match");
     selectedCards.forEach((selectedCard) => {
