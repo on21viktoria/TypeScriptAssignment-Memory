@@ -3,15 +3,15 @@
     grid-template-columns: auto auto auto auto;
     background-color: aliceblue;
     padding: 10px;
-    width: 640px;
-    height: 640px;
+    width: 500px;
+    height: 500px;
     column-gap: 10px;
     row-gap: 10px;
 }
 
 .card {
     background-color: transparent;
-    border: 1px solid black;
+    border: 5px solid black;
     border-radius: 5px;
     position: relative;
     perspective: 1000px;
@@ -33,12 +33,7 @@ img {
     border-radius: 5px;
 }
 
-.front {
-    background-color: aquamarine;
-}
-  
 .back {
-    background-color: green;
     transform: rotateY(180deg);
 }
 
@@ -47,9 +42,9 @@ img {
 }
 
 .set-player {
-    background-color: blue;
+    border: 5px solid aqua;
 }
 
 .set-computer {
-    background-color: red;
+    border: 5px solid red;
 }
