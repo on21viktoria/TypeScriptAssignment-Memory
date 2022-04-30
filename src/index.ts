@@ -62,8 +62,8 @@ const cards: MemoryCard[] = [
 ];
 
 const cardsContainers =
-  document.querySelectorAll<HTMLImageElement>(".memory-card");
-let selectedCards: HTMLImageElement[] = [];
+  document.querySelectorAll<HTMLDivElement>(".card");
+let selectedCards: HTMLDivElement[] = [];
 let score: number = 0;
 
 assignRandomSpotsForCards();
@@ -80,25 +80,25 @@ function assignRandomSpotsForCards(): void {
     }
   }
   for (let i = 0; i < cardsContainers.length; i++) {
-    cardsContainers[i].setAttribute("src", memoryCardsSpots[i].image);
-    cardsContainers[i].setAttribute("alt", memoryCardsSpots[i].cardId);
-    cardsContainers[i].setAttribute("name", memoryCardsSpots[i].cardId);
+    console.log(cardsContainers[i].lastElementChild?.firstElementChild)
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("src", memoryCardsSpots[i].image);
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("alt", memoryCardsSpots[i].cardId);
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("name", memoryCardsSpots[i].cardId);
   }
 }
 
 cardsContainers.forEach((cardsContainer) => {
-  cardsContainer.addEventListener("click", selectCard);
+  cardsContainer.addEventListener("click", flipCard);
 });
 
-function selectCard(e: UIEvent) {
-  const currentCard = e.target as HTMLImageElement;
-  currentCard.removeEventListener("click", selectCard);
+function flipCard(this: HTMLDivElement) {
+  this.removeEventListener("click", flipCard);
 
-  selectedCards.push(currentCard);
+  selectedCards.push(this);
 
   selectedCards.forEach((selectedCard) => {
     console.log(selectedCard);
-    selectedCard.parentElement?.classList.add("selected")
+    selectedCard.classList.add("selected");
   });
 
   if (selectedCards.length === 2) {
@@ -107,23 +107,26 @@ function selectCard(e: UIEvent) {
 }
 
 function checkforMatch() {
+  console.log(selectedCards[0])
   if (
-    selectedCards[0].getAttribute("name") ===
-    selectedCards[1].getAttribute("name")
+    selectedCards[0].lastElementChild?.firstElementChild?.getAttribute("name") ===
+    selectedCards[1].lastElementChild?.firstElementChild?.getAttribute("name")
   ) {
     console.log("Match");
     selectedCards.forEach((selectedCard) => {
-    selectedCard.parentElement?.classList.remove("selected");
-    selectedCard.parentElement?.classList.add("set");
-    selectedCard.removeEventListener("click", selectCard);
+    selectedCard.classList.add("set-player");
+    selectedCard.removeEventListener("click", flipCard);
     });
 
     setScore();
   } else {
     console.log("no match");
     selectedCards.forEach((selectedCard) => {
-      selectedCard.parentElement?.classList.remove("selected");
-      selectedCard.addEventListener("click", selectCard);
+
+      setTimeout(() => {
+        selectedCard.classList.remove("selected");
+        selectedCard.addEventListener("click", flipCard);
+      }, 1000);
     });
   }
 
