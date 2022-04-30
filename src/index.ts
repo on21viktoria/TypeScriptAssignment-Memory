@@ -1,6 +1,7 @@
 //THIS IS THE ENTRY FILE - WRITE YOUR MAIN LOGIC HERE!
 import { helloWorld, Beispiel } from "./myModule";
 import { MemoryCard } from "./MemoryCard.interface";
+import { alertMe } from "./myOtherModule";
 
 const cards: MemoryCard[] = [
   {
@@ -135,10 +136,10 @@ function checkforMatch() {
 
 function setScore() {
   score++;
-  let scoreElement = document.querySelector(".score") as HTMLHeadingElement
+  let scoreElement = document.querySelector(".score-number-player") as HTMLHeadingElement
   scoreElement.innerHTML = score.toString();
 
   if(score === 8) {
-    console.log("You won!")
+    alertMe()
   }
 }

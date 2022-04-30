@@ -48,3 +48,14 @@ img {
 .set-computer {
     border: 5px solid red;
 }
+
+.scoreboard {
+    display: flex;
+}
+
+.score {
+    padding: 10px;
+    text-align: center;
+    flex-basis: 100%;
+}
+
