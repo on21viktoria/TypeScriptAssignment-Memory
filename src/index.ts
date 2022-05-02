@@ -1,65 +1,113 @@
 //THIS IS THE ENTRY FILE - WRITE YOUR MAIN LOGIC HERE!
 import { helloWorld, Beispiel } from "./myModule";
-import { MemoryCard } from "./MemoryCard.interface";
-import { alertMe } from "./myOtherModule";
+import { IMemoryCard } from "./modules/memoryCard";
 
-const cards: MemoryCard[] = [
+const cards: IMemoryCard[] = [
   {
     cardId: "breaking-bad",
     image: "./src/assets/cards/breaking_bad.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "damengambit",
     image: "./src/assets/cards/damengambit.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "friends",
     image: "./src/assets/cards/friends.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "game-of-thrones",
     image: "./src/assets/cards/game_of_thrones.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "haus-des-geldes",
     image: "./src/assets/cards/haus_des_geldes.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "rick_and_morty",
     image: "./src/assets/cards/rick_and_morty.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "star-trek",
     image: "./src/assets/cards/star_trek.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
   {
     cardId: "the-office",
     image: "./src/assets/cards/the_office.png",
     count: 0,
-    selected: false,
+    flipped: false,
     set: false,
   },
+  {
+    cardId: "sherlock",
+    image: "./src/assets/cards/sherlock.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "better_call_saul",
+    image: "./src/assets/cards/better_call_saul.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "stranger_things",
+    image: "./src/assets/cards/stranger_things.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "the_twilight_zone",
+    image: "./src/assets/cards/the_twilight_zone.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "the_walking_dead",
+    image: "./src/assets/cards/the_walking_dead.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "the-wire",
+    image: "./src/assets/cards/the_wire.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  },
+  {
+    cardId: "vikings",
+    image: "./src/assets/cards/vikings.png",
+    count: 0,
+    flipped: false,
+    set: false,
+  }
 ];
 
 const cardsContainers =
@@ -70,9 +118,9 @@ let score: number = 0;
 assignRandomSpotsForCards();
 
 function assignRandomSpotsForCards(): void {
-  let memoryCardsSpots: MemoryCard[] = [];
+  let memoryCardsSpots: IMemoryCard[] = [];
 
-  while (memoryCardsSpots.length < 16) {
+  while (memoryCardsSpots.length < 30) {
     let generatedCard = cards[Math.floor(Math.random() * cards.length)];
 
     if (generatedCard.count < 2) {
@@ -81,7 +129,6 @@ function assignRandomSpotsForCards(): void {
     }
   }
   for (let i = 0; i < cardsContainers.length; i++) {
-    console.log(cardsContainers[i].lastElementChild?.firstElementChild)
     cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("src", memoryCardsSpots[i].image);
     cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("alt", memoryCardsSpots[i].cardId);
     cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("name", memoryCardsSpots[i].cardId);
@@ -127,7 +174,7 @@ function checkforMatch() {
       setTimeout(() => {
         selectedCard.classList.remove("selected");
         selectedCard.addEventListener("click", flipCard);
-      }, 1000);
+      }, 1500);
     });
   }
 
@@ -138,8 +185,4 @@ function setScore() {
   score++;
   let scoreElement = document.querySelector(".score-number-player") as HTMLHeadingElement
   scoreElement.innerHTML = score.toString();
-
-  if(score === 8) {
-    alertMe()
-  }
 }
