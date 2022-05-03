@@ -1,119 +1,97 @@
 //THIS IS THE ENTRY FILE - WRITE YOUR MAIN LOGIC HERE!
 import { helloWorld, Beispiel } from "./myModule";
-import { IMemoryCard, MemoryCard } from "./modules/memoryCard";
+import {
+  IMemoryCard,
+  MemoryCard,
+  memoryCardGroups,
+} from "./modules/memoryCard";
+import { Bot } from "./modules/botModule";
+import { Player } from "./modules/playerModule";
 
 const cards: IMemoryCard[] = [
   {
     cardId: "breaking-bad",
     image: "./src/assets/cards/breaking_bad.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "damengambit",
     image: "./src/assets/cards/damengambit.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "friends",
     image: "./src/assets/cards/friends.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "game-of-thrones",
     image: "./src/assets/cards/game_of_thrones.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "haus-des-geldes",
     image: "./src/assets/cards/haus_des_geldes.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "rick_and_morty",
     image: "./src/assets/cards/rick_and_morty.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "star-trek",
     image: "./src/assets/cards/star_trek.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "the-office",
     image: "./src/assets/cards/the_office.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "sherlock",
     image: "./src/assets/cards/sherlock.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "better_call_saul",
     image: "./src/assets/cards/better_call_saul.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "stranger_things",
     image: "./src/assets/cards/stranger_things.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "the_twilight_zone",
     image: "./src/assets/cards/the_twilight_zone.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "the_walking_dead",
     image: "./src/assets/cards/the_walking_dead.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "the-wire",
     image: "./src/assets/cards/the_wire.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
   {
     cardId: "vikings",
     image: "./src/assets/cards/vikings.png",
     count: 0,
-    flipped: false,
-    set: false,
   },
 ];
 
 const cardsContainers = document.querySelectorAll<HTMLDivElement>(".card");
 let selectedCards: HTMLDivElement[] = [];
 let score = 0;
-let currentPlayer = 0;
+const bot = new Bot();
+const player = new Player("Viktoria", "aqua", 0);
+let currentPlayer: Player = player;
 
 assignRandomSpotsForCards();
 
@@ -147,7 +125,6 @@ function assignRandomSpotsForCards(): void {
 const button = document.querySelector<HTMLButtonElement>(".btn");
 
 if (button) {
-  console.log(button);
   button.onclick = function () {
     const popup = document.querySelector<HTMLDivElement>(".popup");
     if (popup) {
@@ -163,10 +140,11 @@ cardsContainers.forEach((cardsContainer) => {
 function flipCard(this: HTMLDivElement) {
   this.removeEventListener("click", flipCard);
 
+  bot.storeCards(this);
+
   selectedCards.push(this);
 
   selectedCards.forEach((selectedCard) => {
-    console.log(selectedCard);
     selectedCard.classList.add("selected");
   });
 
@@ -175,38 +153,89 @@ function flipCard(this: HTMLDivElement) {
   }
 }
 
-function checkforMatch() {
+function flipCardBot(choice: HTMLDivElement[]){
+  selectedCards.push(choice[0]);
   console.log(selectedCards[0]);
+  selectedCards.forEach((selectedCard) => {
+    selectedCard.classList.add("selected");
+  });
+
+  if (selectedCards.length === 2) {
+    checkforMatch();
+  }
+
+  selectedCards.push(choice[1]);
+
+  selectedCards.forEach((selectedCard) => {
+    selectedCard.classList.add("selected");
+  });
+
+  if (selectedCards.length === 2) {
+    checkforMatch();
+  }
+}
+
+
+
+function checkforMatch() {
   if (
     selectedCards[0].lastElementChild?.firstElementChild?.getAttribute(
       "name"
     ) ===
     selectedCards[1].lastElementChild?.firstElementChild?.getAttribute("name")
   ) {
-    console.log("Match");
     selectedCards.forEach((selectedCard) => {
-      selectedCard.classList.add("set-player");
+      selectedCard.classList.add("set");
+      selectedCard.classList.remove("selected");
+      setPlayerColor(selectedCard);
       selectedCard.removeEventListener("click", flipCard);
     });
 
     setScore();
   } else {
-    console.log("no match");
     selectedCards.forEach((selectedCard) => {
       setTimeout(() => {
         selectedCard.classList.remove("selected");
         selectedCard.addEventListener("click", flipCard);
       }, 1500);
     });
+    changePlayer();
   }
 
   selectedCards = [];
 }
 
 function setScore() {
-  score++;
-  let scoreElement = document.querySelector(
-    ".score-number-player"
-  ) as HTMLHeadingElement;
-  scoreElement.innerHTML = score.toString();
+  currentPlayer.setScore(currentPlayer.getScore() + 1);
+
+  let scoreElement!: HTMLHeadingElement;
+  if (currentPlayer === player) {
+    scoreElement = document.querySelector(
+      ".score-number-player"
+    ) as HTMLHeadingElement;
+  }
+  if (currentPlayer === bot) {
+    scoreElement = document.querySelector(
+      ".score-number-bot"
+    ) as HTMLHeadingElement;
+  }
+  scoreElement.innerHTML = currentPlayer.getScore().toString();
+}
+
+function changePlayer() {
+  if (currentPlayer === player) {
+    currentPlayer = bot;
+    flipCardBot(bot.selectCardsToFlip(cardsContainers));
+  } else {
+    currentPlayer = player;
+  }
+}
+
+function setPlayerColor(selectedCard: HTMLDivElement) {
+  if (currentPlayer === player) {
+    selectedCard.classList.add("set-player");
+  }
+  if (currentPlayer === bot) {
+    selectedCard.classList.add("set-bot");
+  }
 }

@@ -68,12 +68,16 @@ img {
     transform: rotateY(180deg);
 }
 
+.set {
+    transform: rotateY(180deg);
+}
+
 .set-player {
     box-shadow: 0 0 5px 5px aqua;
 }
 
-.set-computer {
-    box-shadow: 0 0 3px 10px red;
+.set-bot {
+    box-shadow: 0 0 5px 5px red;
 }
 
 .scoreboard {
