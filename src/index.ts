@@ -1,6 +1,6 @@
 //THIS IS THE ENTRY FILE - WRITE YOUR MAIN LOGIC HERE!
 import { helloWorld, Beispiel } from "./myModule";
-import { IMemoryCard } from "./modules/memoryCard";
+import { IMemoryCard, MemoryCard } from "./modules/memoryCard";
 
 const cards: IMemoryCard[] = [
   {
@@ -107,13 +107,13 @@ const cards: IMemoryCard[] = [
     count: 0,
     flipped: false,
     set: false,
-  }
+  },
 ];
 
-const cardsContainers =
-  document.querySelectorAll<HTMLDivElement>(".card");
+const cardsContainers = document.querySelectorAll<HTMLDivElement>(".card");
 let selectedCards: HTMLDivElement[] = [];
-let score: number = 0;
+let score = 0;
+let currentPlayer = 0;
 
 assignRandomSpotsForCards();
 
@@ -129,10 +129,31 @@ function assignRandomSpotsForCards(): void {
     }
   }
   for (let i = 0; i < cardsContainers.length; i++) {
-    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("src", memoryCardsSpots[i].image);
-    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("alt", memoryCardsSpots[i].cardId);
-    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute("name", memoryCardsSpots[i].cardId);
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute(
+      "src",
+      memoryCardsSpots[i].image
+    );
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute(
+      "alt",
+      memoryCardsSpots[i].cardId
+    );
+    cardsContainers[i].lastElementChild?.firstElementChild?.setAttribute(
+      "name",
+      memoryCardsSpots[i].cardId
+    );
   }
+}
+
+const button = document.querySelector<HTMLButtonElement>(".btn");
+
+if (button) {
+  console.log(button);
+  button.onclick = function () {
+    const popup = document.querySelector<HTMLDivElement>(".popup");
+    if (popup) {
+      popup.style.display = "none";
+    }
+  };
 }
 
 cardsContainers.forEach((cardsContainer) => {
@@ -155,22 +176,23 @@ function flipCard(this: HTMLDivElement) {
 }
 
 function checkforMatch() {
-  console.log(selectedCards[0])
+  console.log(selectedCards[0]);
   if (
-    selectedCards[0].lastElementChild?.firstElementChild?.getAttribute("name") ===
+    selectedCards[0].lastElementChild?.firstElementChild?.getAttribute(
+      "name"
+    ) ===
     selectedCards[1].lastElementChild?.firstElementChild?.getAttribute("name")
   ) {
     console.log("Match");
     selectedCards.forEach((selectedCard) => {
-    selectedCard.classList.add("set-player");
-    selectedCard.removeEventListener("click", flipCard);
+      selectedCard.classList.add("set-player");
+      selectedCard.removeEventListener("click", flipCard);
     });
 
     setScore();
   } else {
     console.log("no match");
     selectedCards.forEach((selectedCard) => {
-
       setTimeout(() => {
         selectedCard.classList.remove("selected");
         selectedCard.addEventListener("click", flipCard);
@@ -178,11 +200,13 @@ function checkforMatch() {
     });
   }
 
-  selectedCards = []
+  selectedCards = [];
 }
 
 function setScore() {
   score++;
-  let scoreElement = document.querySelector(".score-number-player") as HTMLHeadingElement
+  let scoreElement = document.querySelector(
+    ".score-number-player"
+  ) as HTMLHeadingElement;
   scoreElement.innerHTML = score.toString();
 }
