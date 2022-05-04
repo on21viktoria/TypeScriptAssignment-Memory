@@ -7,6 +7,7 @@ import {
 } from "./modules/memoryCard";
 import { Bot } from "./modules/botModule";
 import { Player } from "./modules/playerModule";
+import * as game from "./modules/gameModule";
 
 const cards: IMemoryCard[] = [
   {
@@ -92,14 +93,36 @@ let score = 0;
 const bot = new Bot();
 const player = new Player("Viktoria", "aqua", 0);
 let currentPlayer: Player = player;
+const themeSelector = document.getElementById("gameTheme");
+let selectedTheme: string
 
-assignRandomSpotsForCards();
+themeSelector?.addEventListener("change", chooseTheme);
 
-function assignRandomSpotsForCards(): void {
+function chooseTheme(this: HTMLSelectElement) : void {
+  let index = this.selectedIndex;
+  selectedTheme = this.options[index].value;
+  console.log(selectedTheme);
+
+  chooseThemeCards();
+}
+
+function chooseThemeCards() : void {
+  let currentCardDeck: IMemoryCard[] = [];
+  memoryCardGroups.forEach(memoryCardGroup => {
+    if(memoryCardGroup.group === selectedTheme){
+      currentCardDeck = memoryCardGroup.memoryCards
+    }
+  });
+
+  assignRandomSpotsForCards(currentCardDeck);
+}
+
+
+function assignRandomSpotsForCards(currentCardDeck: IMemoryCard[]): void {
   let memoryCardsSpots: IMemoryCard[] = [];
 
   while (memoryCardsSpots.length < 30) {
-    let generatedCard = cards[Math.floor(Math.random() * cards.length)];
+    let generatedCard = currentCardDeck[Math.floor(Math.random() * cards.length)];
 
     if (generatedCard.count < 2) {
       memoryCardsSpots.push(generatedCard);
@@ -155,19 +178,11 @@ function flipCard(this: HTMLDivElement) {
 
 function flipCardBot(choice: HTMLDivElement[]){
   selectedCards.push(choice[0]);
-  console.log(selectedCards[0]);
+  selectedCards.push(choice[1])
   selectedCards.forEach((selectedCard) => {
-    selectedCard.classList.add("selected");
-  });
-
-  if (selectedCards.length === 2) {
-    checkforMatch();
-  }
-
-  selectedCards.push(choice[1]);
-
-  selectedCards.forEach((selectedCard) => {
-    selectedCard.classList.add("selected");
+    setTimeout(() => {
+      selectedCard.classList.add("selected");
+    })
   });
 
   if (selectedCards.length === 2) {
