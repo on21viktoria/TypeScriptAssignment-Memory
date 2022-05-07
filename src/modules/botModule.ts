@@ -8,8 +8,11 @@ export enum Difficulty {
 }
 
 export interface Store {
-  memoryCard: HTMLDivElement;
-  timesFlipped: number;
+  cardId: string;
+  cardInformation: {
+    cardName: string | null;
+    timesFlipped: number;
+  };
 }
 
 export interface Bot extends Player {
@@ -33,21 +36,36 @@ export class Bot extends Player implements Bot {
     this.choice = choice;
   }
 
-  storeCards(memoryCard: HTMLDivElement): void {
+  storeCard(memoryCard: HTMLDivElement): void {
+    let memoryCardId: string = memoryCard.id;
+    let memoryCardName: string | null = memoryCard.getAttribute("data-name");
     let timesFlipped = 1;
 
     if (this.store.length === 0) {
-      this.store.push({ memoryCard, timesFlipped });
+      this.store.push({
+        cardId: memoryCardId,
+        cardInformation: {
+          cardName: memoryCardName,
+          timesFlipped: timesFlipped,
+        },
+      });
     } else {
-      let currentCard = this.store.find(
-        (s) => s.memoryCard.id === memoryCard.id
-      );
+      let currentCard = this.store.find((s) => s.cardId === memoryCardId);
       if (currentCard) {
-        currentCard.timesFlipped += 1;
+        currentCard.cardInformation.timesFlipped += 1;
       } else {
-        this.store.push({ memoryCard, timesFlipped });
+        this.store.push({
+          cardId: memoryCardId,
+          cardInformation: {
+            cardName: memoryCardName,
+            timesFlipped: timesFlipped,
+          },
+        });
       }
     }
+    this.store.forEach((element) => {
+      console.log(element);
+    });
   }
 
   selectCardsToFlip(cardsContainers: NodeListOf<HTMLDivElement>): void {
@@ -66,22 +84,18 @@ export class Bot extends Player implements Bot {
     this.choice[1] =
       possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
 
-    if(this.choice[0] === this.choice[1]){
-      while(!choicesNotEqual){
+    if (this.choice[0] === this.choice[1]) {
+      while (!choicesNotEqual) {
         this.choice[1] =
-        possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+          possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
       }
-      if(this.choice[0] === this.choice[1]){
+      if (this.choice[0] === this.choice[1]) {
         choicesNotEqual = true;
       }
     }
   }
 
-  
-
-  flipCardBot(
-    cardsContainers: NodeListOf<HTMLDivElement>,
-  ): HTMLDivElement[] {
+  flipCardBot(cardsContainers: NodeListOf<HTMLDivElement>): HTMLDivElement[] {
     this.selectCardsToFlip(cardsContainers);
 
     this.choice.forEach((c) => {
@@ -92,9 +106,14 @@ export class Bot extends Player implements Bot {
       console.log(c.classList);
     });
 
-
     return this.choice;
   }
+
+  removeSelectedCardsFromStore(selectedCardId: string) {
+    let currentStore = this.store.filter((storeElement) => storeElement.cardId != selectedCardId);
+    this.store = currentStore;
+  }
+
 }
 
 /* findPair(): boolean {

@@ -111,6 +111,8 @@ function flipCard(this: HTMLDivElement) {
   setFlips();
   this.removeEventListener("click", flipCard);
   this.classList.add("selected");
+  console.log(this.getAttribute("data-name"))
+  bot.storeCard(this);
 
   selectedCards.push(this);
 
@@ -121,16 +123,17 @@ function flipCard(this: HTMLDivElement) {
 
 function checkforMatch(selectedcards: HTMLDivElement[]) {
   if (
-    selectedcards[0].lastElementChild?.firstElementChild?.getAttribute(
-      "name"
+    selectedcards[0].getAttribute(
+      "data-name"
     ) ===
-    selectedcards[1].lastElementChild?.firstElementChild?.getAttribute("name")
+    selectedcards[1].getAttribute("data-name")
   ) {
     selectedcards.forEach((selectedcard) => {
       selectedcard.classList.add("set");
       selectedcard.classList.remove("selected");
       setPlayerColor(selectedcard);
       selectedcard.removeEventListener("click", flipCard);
+      bot.removeSelectedCardsFromStore(selectedcard.id)
     });
 
     setScore();

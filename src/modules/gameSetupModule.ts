@@ -50,16 +50,18 @@ function setupBoard() {
     imageElement.setAttribute("alt", memoryCardsSpots[index].cardId);
     imageElement?.setAttribute("name", memoryCardsSpots[index].cardId);
 
+    cardsContainer.setAttribute("data-name", memoryCardsSpots[index].cardId)
+
     index++;
   });
 }
 
 export function startGame() {
-    getThemeCards();
-    shuffleCards();
-    setupBoard();
+  getThemeCards();
+  shuffleCards();
+  setupBoard();
 
-    if (popup) {
-        popup.style.display = "none";
-    }
+  if (popup) {
+    popup.style.display = "none";
+  }
 }
