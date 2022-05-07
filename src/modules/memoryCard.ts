@@ -193,5 +193,85 @@ export const memoryCardGroups: IMemoryCardGroup[] = [
           count: 0
         }
       ]
-    }
+    },
+    {
+      group: "german-cities",
+      memoryCards: [
+        {
+          cardId: "bamberg",
+          image: "./src/assets/cards/german-cities/bamberg.png",
+          count: 0
+        },
+        {
+          cardId: "berlin",
+          image: "./src/assets/cards/german-cities/berlin.png",
+          count: 0
+        },
+        {
+          cardId: "bremen",
+          image: "./src/assets/cards/german-cities/bremen.png",
+          count: 0
+        },
+        {
+          cardId: "dresden",
+          image: "./src/assets/cards/german-cities/dresden.png",
+          count: 0
+        },
+        {
+          cardId: "frankfurt",
+          image: "./src/assets/cards/german-cities/frankfurt.png",
+          count: 0
+        },
+        {
+          cardId: "freiburg",
+          image: "./src/assets/cards/german-cities/freiburg.png",
+          count: 0
+        },
+        {
+          cardId: "hamburg",
+          image: "./src/assets/cards/german-cities/hamburg.png",
+          count: 0
+        },
+        {
+          cardId: "koeln",
+          image: "./src/assets/cards/german-cities/koeln.png",
+          count: 0
+        },
+        {
+          cardId: "leipzig",
+          image: "./src/assets/cards/german-cities/leipzig.png",
+          count: 0
+        },
+        {
+          cardId: "luebeck",
+          image: "./src/assets/cards/german-cities/luebeck.png",
+          count: 0
+        },
+        {
+          cardId: "mannheim",
+          image: "./src/assets/cards/german-cities/mannheim.png",
+          count: 0
+        },
+        {
+          cardId: "muenchen",
+          image: "./src/assets/cards/german-cities/muenchen.png",
+          count: 0
+        },
+        {
+          cardId: "nuernberg",
+          image: "./src/assets/cards/german-cities/nuernberg.png",
+          count: 0
+        },
+        {
+          cardId: "weimar",
+          image: "./src/assets/cards/german-cities/weimar.png",
+          count: 0
+        },
+        {
+          cardId: "wuerzburg",
+          image: "./src/assets/cards/german-cities/wuerzburg.png",
+          count: 0
+        },
+      ],
+    },
 ];
