@@ -18,9 +18,19 @@ export interface Bot extends Player {
 }
 
 export class Bot extends Player implements Bot {
+  choice: HTMLDivElement[] = [];
+
   constructor() {
-    super("bot", "red", 0);
+    super("bot");
     this.store = [];
+  }
+
+  getChoice(): HTMLDivElement[] {
+    return this.choice;
+  }
+
+  setChoice(choice: HTMLDivElement[]) {
+    this.choice = choice;
   }
 
   storeCards(memoryCard: HTMLDivElement): void {
@@ -40,24 +50,54 @@ export class Bot extends Player implements Bot {
     }
   }
 
-  selectCardsToFlip(cardsContainers: NodeListOf<HTMLDivElement>) : HTMLDivElement[] {
+  selectCardsToFlip(cardsContainers: NodeListOf<HTMLDivElement>): void {
     let possibleChoices: HTMLDivElement[] = [];
-    let choice : HTMLDivElement[] = [];
+    let choicesNotEqual = false;
+
     cardsContainers.forEach((cardsContainer) => {
-      if (!cardsContainer.classList.contains("selected")) {
+      if (!cardsContainer.classList.contains("set")) {
         possibleChoices.push(cardsContainer);
       }
     });
-    choice[0] =
-      possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
-    
-    choice[1] =
+
+    this.choice[0] =
       possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
 
-    return choice;
+    this.choice[1] =
+      possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+
+    if(this.choice[0] === this.choice[1]){
+      while(!choicesNotEqual){
+        this.choice[1] =
+        possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
+      }
+      if(this.choice[0] === this.choice[1]){
+        choicesNotEqual = true;
+      }
+    }
   }
 
-  /* findPair(): boolean {
+  
+
+  flipCardBot(
+    cardsContainers: NodeListOf<HTMLDivElement>,
+  ): HTMLDivElement[] {
+    this.selectCardsToFlip(cardsContainers);
+
+    this.choice.forEach((c) => {
+      setTimeout(() => {
+        c.classList.add("selected");
+      }, 1500);
+
+      console.log(c.classList);
+    });
+
+
+    return this.choice;
+  }
+}
+
+/* findPair(): boolean {
     console.log(this.store.length);
     for (let i = 0; i < this.store.length; i++) {
       console.log("i: ",
@@ -90,4 +130,3 @@ export class Bot extends Player implements Bot {
     }
     return false;
   } */
-}

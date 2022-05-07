@@ -23,6 +23,14 @@ export class MemoryCard implements IMemoryCard {
     this.image = image;
     this.count = count;
   }
+
+  getCount() : number {
+    return this.count
+  }
+
+  setCount(count: number) {
+    this.count = count
+  }
 }
 
 export const memoryCardGroups: IMemoryCardGroup[] = [

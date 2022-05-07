@@ -1,18 +1,18 @@
 export interface IPlayer {
     name: string;
-    color: string;
     score: number;
+    flips: number
 }
 
 export class Player implements IPlayer {
     name: string;
-    color: string;
     score: number;
+    flips: number;
 
-    constructor(name: string, color: string, score: number) {
+    constructor(name: string) {
         this.name = name;
-        this.color = color;
-        this.score = score;
+        this.score = 0;
+        this.flips = 0;
     }
 
     getName() : string {
@@ -29,6 +29,14 @@ export class Player implements IPlayer {
 
     setScore(score: number) : void {
         this.score = score;
+    }
+
+    getFlips() : number {
+        return this.flips;
+    }
+
+    setFlips(flips: number) : void {
+        this.flips = flips;
     }
 }
 
