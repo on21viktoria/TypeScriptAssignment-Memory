@@ -24,10 +24,12 @@ export interface Bot extends Player {
 export class Bot extends Player implements Bot {
   choice: HTMLDivElement[] = [];
   nonSetCards: HTMLDivElement[] = [];
+  difficulty: Difficulty;
 
-  constructor() {
+  constructor(difficulty: Difficulty) {
     super("bot");
     this.store = [];
+    this.difficulty = difficulty;
   }
 
   getChoice(): HTMLDivElement[] {
@@ -74,24 +76,11 @@ export class Bot extends Player implements Bot {
     this.store = currentStore;
   }
 
-  /*flipCardBot(cardsContainers: NodeListOf<HTMLDivElement>): HTMLDivElement[] {
-    this.selectCardsToFlip(cardsContainers);
-
-    this.choice.forEach((c) => {
-      setTimeout(() => {
-        c.classList.add("selected");
-      }, 1500);
-
-      console.log(c.classList);
-    });
-
-    return this.choice;
-  }*/
-
   checkForMatchInStore(cardsContainers: NodeListOf<HTMLDivElement>) {
-    console.log("checkForMatchInStore")
+    console.log("checkForMatchInStore");
     let checkInStore = false;
     this.store.forEach((storeElement) => {
+      console.log(storeElement);
       if (this.store[0].cardId !== storeElement.cardId) {
         if (
           this.store[0].cardInformation.cardName ===
@@ -102,17 +91,18 @@ export class Bot extends Player implements Bot {
           ) as HTMLDivElement;
           this.choice.push(card);
           checkInStore = true;
+          console.log(checkInStore);
         }
       }
     });
-    console.log("checkForMatchInStore",this.choice.length)
+    console.log("checkForMatchInStore", this.choice.length);
     if (!checkInStore) {
       this.getNonSetCards(cardsContainers);
     }
   }
 
   getNonSetCards(cardsContainers: NodeListOf<HTMLDivElement>) {
-    console.log("getNonSetCards")
+    console.log("getNonSetCards");
     cardsContainers.forEach((cardsContainer) => {
       if (
         !cardsContainer.classList.contains("set") ||
@@ -121,7 +111,7 @@ export class Bot extends Player implements Bot {
         this.nonSetCards.push(cardsContainer);
       }
     });
-    this.getRandomCard(this.nonSetCards);
+    this.getRandomCardNotFlipped(this.nonSetCards);
   }
 
   checkForStoreMatch(firstCardSelected: HTMLDivElement) {
@@ -132,49 +122,63 @@ export class Bot extends Player implements Bot {
           storeElement.cardInformation.cardName ===
           firstCardSelected.getAttribute("data-name")
         ) {
-          let card = document.getElementById(
-            storeElement.cardId
-          ) as HTMLDivElement;
-          this.choice.push(card);
-          this.selectCards();
-          console.log("checkForStoreMatch", this.choice.length)
+          if (storeElement.cardInformation.timesFlipped > 2) {
+            let card = document.getElementById(
+              storeElement.cardId
+            ) as HTMLDivElement;
+            this.choice.push(card);
+            this.selectCards();
+            console.log("checkForStoreMatch", this.choice.length);
+          }
         }
       }
     });
-    this.getRandomCard(this.nonSetCards);
-    console.log("checkForStoreMatch2", this.choice.length)
+    this.getRandomCardNotFlipped(this.nonSetCards);
+    console.log("checkForStoreMatch2", this.choice.length);
   }
 
-  getRandomCard(memoryCards: HTMLDivElement[]) {
+  getRandomCardNotFlipped(memoryCards: HTMLDivElement[]) {
     console.log("getRandomCard");
     let firstCardSelected: HTMLDivElement;
-    let secondCardSelected: HTMLDivElement
+    let secondCardSelected: HTMLDivElement;
+
+    let filteredCards = [];
+    filteredCards = memoryCards.filter((memoryCard) => {
+      return !this.store.find((storedCard) => {
+        return storedCard.cardId === memoryCard.id;
+      });
+    });
+
     if (!this.choice[0]) {
       firstCardSelected =
-        memoryCards[Math.floor(Math.random() * memoryCards.length)];
-        console.log(firstCardSelected)
+        filteredCards[Math.floor(Math.random() * filteredCards.length)];
+      console.log(firstCardSelected);
       this.choice.push(firstCardSelected);
-      console.log("getRandomCard if " ,this.choice.length);
+      console.log("getRandomCard if ", this.choice.length);
       this.checkForStoreMatch(firstCardSelected);
-    }
-    else {
-      secondCardSelected = memoryCards[Math.floor(Math.random() * memoryCards.length)];
+    } else {
+      secondCardSelected =
+        filteredCards[Math.floor(Math.random() * filteredCards.length)];
       this.choice.push(secondCardSelected);
-      console.log("getRandomCard else " ,this.choice.length);
+      console.log("getRandomCard else ", this.choice.length);
     }
-    console.log("getRandomCard end" ,this.choice.length);
+    console.log("getRandomCard end", this.choice.length);
   }
 
   selectCards(): HTMLDivElement[] {
-    console.log(this.selectCards)
+    console.log(this.choice);
+    console.log(this.selectCards);
     console.log("selectCards", this.choice.length);
-    for(let i = 0; i < this.choice.length; i++){
-      console.log("Card " + i + ": " + this.choice[i].getAttribute("data-name"))
+    for (let i = 0; i < this.choice.length; i++) {
+      console.log(
+        "Card " + i + ": " + this.choice[i].getAttribute("data-name")
+      );
     }
-    this.choice.forEach((c) => {
-      setTimeout(() => {
-        c.classList.add("selected");
-      }, 1500);
+
+    this.choice.forEach((element) => {
+      this.storeCard(element);
+      console.log("CurrentElement: ", element);
+      element.classList.add("selected");
     });
     return this.choice;
   }
@@ -183,37 +187,3 @@ export class Bot extends Player implements Bot {
     this.choice = [];
   }
 }
-
-/* findPair(): boolean {
-    console.log(this.store.length);
-    for (let i = 0; i < this.store.length; i++) {
-      console.log("i: ",
-        this.store[
-          i
-        ].memoryCard.lastElementChild?.firstElementChild?.getAttribute("name")
-      );
-      for (let j = 0; j < this.store.length; j++) {
-        console.log("j: ",
-          this.store[
-            j
-          ].memoryCard.lastElementChild?.firstElementChild?.getAttribute("name")
-        );
-        if (
-          i != j &&
-          this.store[
-            i
-          ].memoryCard.lastElementChild?.firstElementChild?.getAttribute(
-            "name"
-          ) ===
-            this.store[
-              j
-            ].memoryCard.lastElementChild?.firstElementChild?.getAttribute(
-              "name"
-            )
-        ) {
-          return true;
-        }
-      }
-    }
-    return false;
-  } */
