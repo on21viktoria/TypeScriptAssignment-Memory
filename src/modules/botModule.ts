@@ -1,3 +1,4 @@
+import { cardsContainers } from "./gameModule";
 import { MemoryCard } from "./memoryCard";
 import { Player } from "./playerModule";
 
@@ -22,6 +23,7 @@ export interface Bot extends Player {
 
 export class Bot extends Player implements Bot {
   choice: HTMLDivElement[] = [];
+  nonSetCards: HTMLDivElement[] = [];
 
   constructor() {
     super("bot");
@@ -63,39 +65,16 @@ export class Bot extends Player implements Bot {
         });
       }
     }
-    this.store.forEach((element) => {
-      console.log(element);
-    });
   }
 
-  selectCardsToFlip(cardsContainers: NodeListOf<HTMLDivElement>): void {
-    let possibleChoices: HTMLDivElement[] = [];
-    let choicesNotEqual = false;
-
-    cardsContainers.forEach((cardsContainer) => {
-      if (!cardsContainer.classList.contains("set")) {
-        possibleChoices.push(cardsContainer);
-      }
-    });
-
-    this.choice[0] =
-      possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
-
-    this.choice[1] =
-      possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
-
-    if (this.choice[0] === this.choice[1]) {
-      while (!choicesNotEqual) {
-        this.choice[1] =
-          possibleChoices[Math.floor(Math.random() * possibleChoices.length)];
-      }
-      if (this.choice[0] === this.choice[1]) {
-        choicesNotEqual = true;
-      }
-    }
+  removeSelectedCardsFromStore(selectedCardId: string) {
+    let currentStore = this.store.filter(
+      (storeElement) => storeElement.cardId != selectedCardId
+    );
+    this.store = currentStore;
   }
 
-  flipCardBot(cardsContainers: NodeListOf<HTMLDivElement>): HTMLDivElement[] {
+  /*flipCardBot(cardsContainers: NodeListOf<HTMLDivElement>): HTMLDivElement[] {
     this.selectCardsToFlip(cardsContainers);
 
     this.choice.forEach((c) => {
@@ -107,13 +86,102 @@ export class Bot extends Player implements Bot {
     });
 
     return this.choice;
+  }*/
+
+  checkForMatchInStore(cardsContainers: NodeListOf<HTMLDivElement>) {
+    console.log("checkForMatchInStore")
+    let checkInStore = false;
+    this.store.forEach((storeElement) => {
+      if (this.store[0].cardId !== storeElement.cardId) {
+        if (
+          this.store[0].cardInformation.cardName ===
+          storeElement.cardInformation.cardName
+        ) {
+          let card = document.getElementById(
+            storeElement.cardId
+          ) as HTMLDivElement;
+          this.choice.push(card);
+          checkInStore = true;
+        }
+      }
+    });
+    console.log("checkForMatchInStore",this.choice.length)
+    if (!checkInStore) {
+      this.getNonSetCards(cardsContainers);
+    }
   }
 
-  removeSelectedCardsFromStore(selectedCardId: string) {
-    let currentStore = this.store.filter((storeElement) => storeElement.cardId != selectedCardId);
-    this.store = currentStore;
+  getNonSetCards(cardsContainers: NodeListOf<HTMLDivElement>) {
+    console.log("getNonSetCards")
+    cardsContainers.forEach((cardsContainer) => {
+      if (
+        !cardsContainer.classList.contains("set") ||
+        !cardsContainer.classList.contains("selected")
+      ) {
+        this.nonSetCards.push(cardsContainer);
+      }
+    });
+    this.getRandomCard(this.nonSetCards);
   }
 
+  checkForStoreMatch(firstCardSelected: HTMLDivElement) {
+    console.log("checkForStoreMatch");
+    this.store.forEach((storeElement) => {
+      if (storeElement.cardId !== firstCardSelected.id) {
+        if (
+          storeElement.cardInformation.cardName ===
+          firstCardSelected.getAttribute("data-name")
+        ) {
+          let card = document.getElementById(
+            storeElement.cardId
+          ) as HTMLDivElement;
+          this.choice.push(card);
+          this.selectCards();
+          console.log("checkForStoreMatch", this.choice.length)
+        }
+      }
+    });
+    this.getRandomCard(this.nonSetCards);
+    console.log("checkForStoreMatch2", this.choice.length)
+  }
+
+  getRandomCard(memoryCards: HTMLDivElement[]) {
+    console.log("getRandomCard");
+    let firstCardSelected: HTMLDivElement;
+    let secondCardSelected: HTMLDivElement
+    if (!this.choice[0]) {
+      firstCardSelected =
+        memoryCards[Math.floor(Math.random() * memoryCards.length)];
+        console.log(firstCardSelected)
+      this.choice.push(firstCardSelected);
+      console.log("getRandomCard if " ,this.choice.length);
+      this.checkForStoreMatch(firstCardSelected);
+    }
+    else {
+      secondCardSelected = memoryCards[Math.floor(Math.random() * memoryCards.length)];
+      this.choice.push(secondCardSelected);
+      console.log("getRandomCard else " ,this.choice.length);
+    }
+    console.log("getRandomCard end" ,this.choice.length);
+  }
+
+  selectCards(): HTMLDivElement[] {
+    console.log(this.selectCards)
+    console.log("selectCards", this.choice.length);
+    for(let i = 0; i < this.choice.length; i++){
+      console.log("Card " + i + ": " + this.choice[i].getAttribute("data-name"))
+    }
+    this.choice.forEach((c) => {
+      setTimeout(() => {
+        c.classList.add("selected");
+      }, 1500);
+    });
+    return this.choice;
+  }
+
+  clear() {
+    this.choice = [];
+  }
 }
 
 /* findPair(): boolean {

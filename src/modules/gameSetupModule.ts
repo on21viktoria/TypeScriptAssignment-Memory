@@ -8,12 +8,11 @@ export const themeSelector = document.getElementById(
 ) as HTMLSelectElement;
 export const playbutton = document.querySelector<HTMLButtonElement>(".btn");
 export const popup = document.querySelector<HTMLDivElement>(".popup");
-export let selectedTheme = "series";
+export let selectedTheme: string = "series";
 export let currentCardDeck: IMemoryCard[] = [];
 export let memoryCardsSpots: IMemoryCard[] = [];
 
 export function chooseTheme(this: HTMLSelectElement): void {
-  console.log("i got called");
   let index = this.selectedIndex;
   selectedTheme = this.options[index].value;
 
@@ -29,7 +28,8 @@ export function getThemeCards(): void {
 }
 
 function shuffleCards(): void {
-  while (memoryCardsSpots.length < 30) {
+  let cardCount = 30
+  while (memoryCardsSpots.length < cardCount) {
     let currentCard =
       currentCardDeck[Math.floor(Math.random() * currentCardDeck.length)];
 
@@ -48,7 +48,7 @@ function setupBoard() {
 
     imageElement.setAttribute("src", memoryCardsSpots[index].image);
     imageElement.setAttribute("alt", memoryCardsSpots[index].cardId);
-    imageElement?.setAttribute("name", memoryCardsSpots[index].cardId);
+    imageElement.setAttribute("name", memoryCardsSpots[index].cardId);
 
     cardsContainer.setAttribute("data-name", memoryCardsSpots[index].cardId)
 
