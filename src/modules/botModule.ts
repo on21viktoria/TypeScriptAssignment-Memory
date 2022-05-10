@@ -38,6 +38,9 @@ export class Bot extends Player implements Bot {
     this.choice = choice;
   }
 
+  getFlips() : number {
+    return this.flips;
+  }
   storeCard(memoryCard: HTMLDivElement): void {
     let timesFlipped = 1;
 
@@ -139,6 +142,7 @@ export class Bot extends Player implements Bot {
     this.choice.forEach((element) => {
       this.storeCard(element);
       element.classList.add("selected");
+      this.setFlipCards()
     });
     return this.choice;
   }
@@ -165,5 +169,15 @@ export class Bot extends Player implements Bot {
       }
     }
     return false;
+  }
+
+  setFlipCards() {
+    this.setFlips(this.getFlips() +1);
+  
+    let flipElement: HTMLHeadingElement;
+      flipElement = document.querySelector(
+        ".flips-number-bot"
+      ) as HTMLHeadingElement;
+      flipElement.innerHTML = this.getFlips().toString();
   }
 }

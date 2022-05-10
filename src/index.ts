@@ -13,6 +13,7 @@ let selectedCards: HTMLDivElement[] = [];
 const bot = new Bot(Difficulty.medium);
 const player = new Player("player");
 let currentPlayer: Player;
+const playerTurn = document.querySelector(".turn") as HTMLDivElement;
 
 themeSelector.addEventListener("change", chooseTheme);
 playbutton?.addEventListener("click", startGame);
@@ -104,10 +105,16 @@ function changePlayer() {
     currentPlayer = player;
   } else if (currentPlayer === player) {
     currentPlayer = bot;
+    playerTurn.classList.add("botTurn");
+    playerTurn.classList.remove("playerTurn")
+    playerTurn.innerHTML = "Bot's turn"
     bot.checkForMatchInStore(cardsContainers);
     checkforMatch(bot.selectCards());
     bot.clear();
   } else if (currentPlayer === bot) {
     currentPlayer = player;
+    playerTurn.classList.add("playerTurn");
+    playerTurn.classList.remove("botTurn")
+    playerTurn.innerHTML = "Your turn"
   }
 }

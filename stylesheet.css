@@ -1,6 +1,7 @@
 body{
     font-family: 'Montserrat', sans-serif;
     color: white;
+    padding: 0;
 }
 .container {
     background-image: url(./src/assets/background/background.jpg);
@@ -10,6 +11,7 @@ body{
     background-position: center;
     width: 100vw;
     height: 100vh;
+    margin-top: 0;
 }
 h1 {
     margin: auto;
@@ -93,6 +95,23 @@ img {
     display: flex;
     width: 740px;
     margin: auto;
+}
+
+.turn {
+    width: 700px;
+    margin: auto;
+    margin-bottom: 10px;
+    padding: 20px;
+    border-radius: 10px; 
+    background-color: rgba(121,198,198, 0.8);
+}
+
+.playerTurn {
+    background-color: rgba(121,198,198, 0.8);
+}
+
+.botTurn {
+    background-color: rgba(255, 82, 82, 0.8);
 }
 
 .score {
