@@ -23,6 +23,7 @@ export class Bot extends Player implements Bot {
   nonSetCards: HTMLDivElement[] = [];
   difficulty: Difficulty;
   pairs: Store[] = [];
+  maxPair: Store[] = [];
 
   constructor(difficulty: Difficulty) {
     super("bot");
@@ -38,12 +39,12 @@ export class Bot extends Player implements Bot {
     this.choice = choice;
   }
 
-  getFlips() : number {
+  getFlips(): number {
     return this.flips;
   }
+
   storeCard(memoryCard: HTMLDivElement): void {
     let timesFlipped = 1;
-
     if (this.store.length === 0) {
       this.store.push({
         card: memoryCard,
@@ -70,25 +71,27 @@ export class Bot extends Player implements Bot {
   }
 
   checkForMatchInStore(cardsContainers: NodeListOf<HTMLDivElement>) {
-    if (this.findNextPairInStore()) {
-      this.choice.push(this.pairs[0].card);
-      if (this.pairs[1].timesFlipped >= 2) {
-        this.choice.push(this.pairs[1].card);
+    this.findAllPairsInStore();
+    if (this.maxPair.length !== 0) {
+      this.choice.push(this.maxPair[0].card);
+      if (this.maxPair[1].timesFlipped >= 2) {
+        this.choice.push(this.maxPair[1].card);
       } else {
-        this.getNonSetCards(cardsContainers);
+        if(this.random() > 50){
+          this.choice.push(this.maxPair[1].card);
+        }
+        else{
+          this.getNonSetCards(cardsContainers);
+        }
       }
-    }
-    else {
+    } else {
       this.getNonSetCards(cardsContainers);
     }
   }
 
   getNonSetCards(cardsContainers: NodeListOf<HTMLDivElement>) {
     cardsContainers.forEach((cardsContainer) => {
-      console.log("CurrentCard has class: " + !cardsContainer.classList.contains("set"))
-      if (
-        (!cardsContainer.classList.contains("set"))
-      ) {
+      if (!cardsContainer.classList.contains("set")) {
         this.nonSetCards.push(cardsContainer);
       }
     });
@@ -125,24 +128,34 @@ export class Bot extends Player implements Bot {
         return storedCard.card.id === memoryCard.id;
       });
     });
-
-    if (!this.choice[0]) {
-      firstCardSelected =
-        filteredCards[Math.floor(Math.random() * filteredCards.length)];
-      this.choice.push(firstCardSelected);
-      this.checkForStoreMatch(firstCardSelected);
-    } else {
-      secondCardSelected =
-        filteredCards[Math.floor(Math.random() * filteredCards.length)];
-      this.choice.push(secondCardSelected);
+    if(filteredCards.length !== 0) {
+      if (!this.choice[0]) {
+        firstCardSelected =
+          filteredCards[Math.floor(Math.random() * filteredCards.length)];
+        this.choice.push(firstCardSelected);
+        this.checkForStoreMatch(firstCardSelected);
+      } else {
+        secondCardSelected =
+          filteredCards[Math.floor(Math.random() * filteredCards.length)];
+        this.choice.push(secondCardSelected);
+      }
     }
+    else {
+      this.getRandomNonSetCard(memoryCards)
+    }
+  }
+
+  getRandomNonSetCard(memoryCards: HTMLDivElement[]) {
+    let randomCard = memoryCards[Math.floor(Math.random() * memoryCards.length)]
+
+    this.choice[1] = randomCard
   }
 
   selectCards(): HTMLDivElement[] {
     this.choice.forEach((element) => {
       this.storeCard(element);
       element.classList.add("selected");
-      this.setFlipCards()
+      this.setFlipCards();
     });
     return this.choice;
   }
@@ -151,9 +164,10 @@ export class Bot extends Player implements Bot {
     this.pairs = [];
     this.choice = [];
     this.nonSetCards = [];
+    this.maxPair = [];
   }
 
-  findNextPairInStore(): boolean {
+  findAllPairsInStore() {
     for (let i = 0; i < this.store.length; i++) {
       for (let j = 0; j < this.store.length; j++) {
         if (this.store[i].card.id !== this.store[j].card.id) {
@@ -161,23 +175,43 @@ export class Bot extends Player implements Bot {
             this.store[i].card.getAttribute("data-name") ===
             this.store[j].card.getAttribute("data-name")
           ) {
-            this.pairs.push(this.store[i], this.store[j]);
-            console.log(this.pairs);
-            return true;
+            if (!this.pairs.includes(this.store[i] || this.store[j])) {
+              this.pairs.push(this.store[i], this.store[j]);
+            }
           }
         }
       }
     }
-    return false;
+    if (this.pairs.length !== 0) {
+      this.getPairWithMostFlips();
+    }
+  }
+
+  getPairWithMostFlips() {
+    let maxTimesFlipped = 0;
+    for (let i = 0; i < this.pairs.length; i++) {
+      if (this.pairs[i].timesFlipped > maxTimesFlipped) {
+        maxTimesFlipped = this.pairs[i].timesFlipped;
+        this.maxPair[0] = this.pairs[i];
+      }
+    }
+    this.maxPair = this.pairs.filter((pair) => {
+      return pair.card.getAttribute("data-name") === this.maxPair[0].card.getAttribute("data-name");
+    })
   }
 
   setFlipCards() {
-    this.setFlips(this.getFlips() +1);
-  
+    this.setFlips(this.getFlips() + 1);
+
     let flipElement: HTMLHeadingElement;
-      flipElement = document.querySelector(
-        ".flips-number-bot"
-      ) as HTMLHeadingElement;
-      flipElement.innerHTML = this.getFlips().toString();
+    flipElement = document.querySelector(
+      ".flips-number-bot"
+    ) as HTMLHeadingElement;
+    flipElement.innerHTML = this.getFlips().toString();
+  }
+
+  random() : number{
+    let rnd = Math.floor(Math.random()* 100 + 1);
+    return rnd;
   }
 }

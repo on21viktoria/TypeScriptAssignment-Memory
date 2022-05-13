@@ -15,8 +15,6 @@ export let memoryCardsSpots: IMemoryCard[] = [];
 export function chooseTheme(this: HTMLSelectElement): void {
   let index = this.selectedIndex;
   selectedTheme = this.options[index].value;
-
-  getThemeCards();
 }
 
 export function getThemeCards(): void {

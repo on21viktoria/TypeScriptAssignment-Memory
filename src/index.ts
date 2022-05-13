@@ -13,6 +13,9 @@ let selectedCards: HTMLDivElement[] = [];
 const bot = new Bot(Difficulty.medium);
 const player = new Player("player");
 let currentPlayer: Player;
+let scoreElement = document.querySelector(
+  ".score-number-player"
+) as HTMLHeadingElement;
 const playerTurn = document.querySelector(".turn") as HTMLDivElement;
 
 themeSelector.addEventListener("change", chooseTheme);
@@ -50,6 +53,15 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
     });
     setScore();
     selectedCards = [];
+    if (currentPlayer === bot) {
+      playerTurn.classList.add("botTurn");
+      playerTurn.classList.remove("playerTurn");
+      playerTurn.innerHTML = "Bot's turn";
+      bot.clear();
+      bot.checkForMatchInStore(cardsContainers);
+      checkforMatch(bot.selectCards());
+      bot.clear();
+    }
   } else {
     setTimeout(() => {
       selectedcards.forEach((selectedcard) => {
@@ -59,18 +71,51 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
       selectedCards = [];
       changePlayer();
     }, 2000);
+
+    setTimeout(() => {},2000)
+  }
+}
+function checkWin() {
+  let cards = [...cardsContainers]
+  let noCards = []
+  noCards = cards.filter((card) => {
+    return !card.classList.contains("set")
+  })
+
+  if(noCards.length === 0){
+    checkWinner()
   }
 }
 
+function checkWinner() {
+  if(bot.getScore() > player.getScore()){
+    console.log("Bot wins");
+  }
+  if(bot.getScore() < player.getScore()){
+    console.log("You win");
+  }
+  if(bot.getScore() === player.getScore()){
+    console.log("Draw");
+  }
+  
+
+}
+
 function setScore() {
-  player.setScore(player.getScore() + 1);
-
-  let scoreElement: HTMLHeadingElement;
-  scoreElement = document.querySelector(
-    ".score-number-player"
-  ) as HTMLHeadingElement;
-
+  if (currentPlayer === player) {
+    player.setScore(player.getScore() + 1);
+    scoreElement = document.querySelector(
+      ".score-number-player"
+    ) as HTMLHeadingElement;
+  }
+  if (currentPlayer === bot) {
+    bot.setScore(bot.getScore() + 1);
+    scoreElement = document.querySelector(
+      ".score-number-bot"
+    ) as HTMLHeadingElement;
+  }
   scoreElement.innerHTML = currentPlayer.getScore().toString();
+  checkWin();
 }
 
 function setFlips() {
@@ -106,15 +151,15 @@ function changePlayer() {
   } else if (currentPlayer === player) {
     currentPlayer = bot;
     playerTurn.classList.add("botTurn");
-    playerTurn.classList.remove("playerTurn")
-    playerTurn.innerHTML = "Bot's turn"
+    playerTurn.classList.remove("playerTurn");
+    playerTurn.innerHTML = "Bot's turn";
     bot.checkForMatchInStore(cardsContainers);
     checkforMatch(bot.selectCards());
     bot.clear();
   } else if (currentPlayer === bot) {
     currentPlayer = player;
     playerTurn.classList.add("playerTurn");
-    playerTurn.classList.remove("botTurn")
-    playerTurn.innerHTML = "Your turn"
+    playerTurn.classList.remove("botTurn");
+    playerTurn.innerHTML = "Your turn";
   }
 }
