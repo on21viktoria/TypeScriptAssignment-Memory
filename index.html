@@ -13,8 +13,10 @@
       href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" type="text/css" href="stylesheet.css" />
   </head>
 
@@ -22,18 +24,36 @@
     <div class="container">
       <div class="popup">
         <h3>Game Settings</h3>
-        <p>Thema:</p>
-        <select id="gameTheme">
-          <option value="series">Serien</option>
-          <option value="videogames">Videospiele</option>
-          <option value="german-cities">Deutsche Städte</option>
-        </select>
-        <button class="btn">Spiel starten</button>
+        <div class="flex-div">
+          <div class="flex-div-item">
+            <p>Thema:</p>
+          </div>
+          <div class="flex-div-item">
+            <select id="gameTheme">
+              <option value="series">Serien</option>
+              <option value="videogames">Videospiele</option>
+              <option value="german-cities">Deutsche Städte</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex-div">
+          <div class="flex-div-item">
+            <p>Schwierigkeit:</p>
+          </div>
+          <div class="flex-div-item">
+            <select id="botDifficulty">
+              <option value="easy">Leicht</option>
+              <option value="middle">Normal</option>
+              <option value="difficult">Schwer</option>
+            </select>
+          </div>
+          <div>
+            <button class="btn">Spiel starten</button>
+          </div>
+        </div>
       </div>
       <h1>Memory</h1>
-      <div class="turn">
-        It's your turn!
-      </div>
+      <div class="turn">It's your turn!</div>
       <div class="grid-container">
         <div id="card-0" class="card">
           <div class="front">

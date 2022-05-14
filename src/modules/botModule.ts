@@ -77,10 +77,9 @@ export class Bot extends Player implements Bot {
       if (this.maxPair[1].timesFlipped >= 2) {
         this.choice.push(this.maxPair[1].card);
       } else {
-        if(this.random() > 50){
+        if (this.random() > 50) {
           this.choice.push(this.maxPair[1].card);
-        }
-        else{
+        } else {
           this.getNonSetCards(cardsContainers);
         }
       }
@@ -115,7 +114,9 @@ export class Bot extends Player implements Bot {
         }
       }
     });
-    this.getRandomCardNotFlipped(this.nonSetCards);
+    if (this.choice.length < 2) {
+      this.getRandomCardNotFlipped(this.nonSetCards);
+    }
   }
 
   getRandomCardNotFlipped(memoryCards: HTMLDivElement[]) {
@@ -128,30 +129,36 @@ export class Bot extends Player implements Bot {
         return storedCard.card.id === memoryCard.id;
       });
     });
-    if(filteredCards.length !== 0) {
+    if (filteredCards.length !== 0) {
       if (!this.choice[0]) {
         firstCardSelected =
           filteredCards[Math.floor(Math.random() * filteredCards.length)];
         this.choice.push(firstCardSelected);
         this.checkForStoreMatch(firstCardSelected);
       } else {
-        secondCardSelected =
+        let sameCard = false;
+        while(!sameCard){
+         this.choice[1] =
           filteredCards[Math.floor(Math.random() * filteredCards.length)];
-        this.choice.push(secondCardSelected);
+          if(this.choice[0].id !== this.choice[1].id){
+            sameCard = true;
+          }
+        }
       }
-    }
-    else {
-      this.getRandomNonSetCard(memoryCards)
+    } else {
+      this.getRandomNonSetCard(memoryCards);
     }
   }
 
   getRandomNonSetCard(memoryCards: HTMLDivElement[]) {
-    let randomCard = memoryCards[Math.floor(Math.random() * memoryCards.length)]
+    let randomCard =
+      memoryCards[Math.floor(Math.random() * memoryCards.length)];
 
-    this.choice[1] = randomCard
+    this.choice[1] = randomCard;
   }
 
   selectCards(): HTMLDivElement[] {
+    console.log(this.choice);
     this.choice.forEach((element) => {
       this.storeCard(element);
       element.classList.add("selected");
@@ -196,8 +203,11 @@ export class Bot extends Player implements Bot {
       }
     }
     this.maxPair = this.pairs.filter((pair) => {
-      return pair.card.getAttribute("data-name") === this.maxPair[0].card.getAttribute("data-name");
-    })
+      return (
+        pair.card.getAttribute("data-name") ===
+        this.maxPair[0].card.getAttribute("data-name")
+      );
+    });
   }
 
   setFlipCards() {
@@ -210,8 +220,8 @@ export class Bot extends Player implements Bot {
     flipElement.innerHTML = this.getFlips().toString();
   }
 
-  random() : number{
-    let rnd = Math.floor(Math.random()* 100 + 1);
+  random(): number {
+    let rnd = Math.floor(Math.random() * 100 + 1);
     return rnd;
   }
 }

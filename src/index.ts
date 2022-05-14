@@ -58,9 +58,11 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
       playerTurn.classList.remove("playerTurn");
       playerTurn.innerHTML = "Bot's turn";
       bot.clear();
-      bot.checkForMatchInStore(cardsContainers);
+      setTimeout(() => {
+        bot.checkForMatchInStore(cardsContainers);
       checkforMatch(bot.selectCards());
       bot.clear();
+      }, 2000);
     }
   } else {
     setTimeout(() => {
@@ -72,34 +74,34 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
       changePlayer();
     }, 2000);
 
-    setTimeout(() => {},2000)
+    setTimeout(() => {}, 2000);
   }
 }
-function checkWin() {
-  let cards = [...cardsContainers]
-  let noCards = []
+function checkBoard() {
+  let cards = [...cardsContainers];
+  let noCards = [];
   noCards = cards.filter((card) => {
-    return !card.classList.contains("set")
-  })
+    return !card.classList.contains("set");
+  });
 
-  if(noCards.length === 0){
-    checkWinner()
+  if (noCards.length === 0) {
+    checkWinner();
   }
 }
 
 function checkWinner() {
-  if(bot.getScore() > player.getScore()){
+  if (bot.getScore() > player.getScore()) {
     console.log("Bot wins");
   }
-  if(bot.getScore() < player.getScore()){
+  if (bot.getScore() < player.getScore()) {
     console.log("You win");
   }
-  if(bot.getScore() === player.getScore()){
+  if (bot.getScore() === player.getScore()) {
     console.log("Draw");
   }
-  
-
 }
+
+function showWinner() {}
 
 function setScore() {
   if (currentPlayer === player) {
@@ -115,7 +117,7 @@ function setScore() {
     ) as HTMLHeadingElement;
   }
   scoreElement.innerHTML = currentPlayer.getScore().toString();
-  checkWin();
+  checkBoard();
 }
 
 function setFlips() {
