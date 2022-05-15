@@ -1,23 +1,28 @@
 import { IMemoryCard } from "./memoryCard";
 import { memoryCardGroups } from "./memoryCard";
+import { startGame } from "./gameModule";
+import * as domUtils from "./../domUtils";
+import { Bot } from "./botModule";
+import { Player } from "./playerModule";
 
-export const cardsContainers =
-  document.querySelectorAll<HTMLDivElement>(".card");
-export const themeSelector = document.getElementById(
-  "gameTheme"
-) as HTMLSelectElement;
-export const playbutton = document.querySelector<HTMLButtonElement>(".btn");
-export const popup = document.querySelector<HTMLDivElement>(".popup");
 export let selectedTheme: string = "series";
+export let selectedDifficulty: string = "medium";
 export let currentCardDeck: IMemoryCard[] = [];
 export let memoryCardsSpots: IMemoryCard[] = [];
+export let bot: Bot;
+export let player: Player;
 
-export function chooseTheme(this: HTMLSelectElement): void {
+export function chooseTheme(this: HTMLSelectElement) {
   let index = this.selectedIndex;
   selectedTheme = this.options[index].value;
 }
 
-export function getThemeCards(): void {
+export function chooseDifficulty(this: HTMLSelectElement) {
+  let index = this.selectedIndex;
+  selectedDifficulty = this.options[index].value;
+}
+
+export function getThemeCards() {
   memoryCardGroups.forEach((memoryCardGroup) => {
     if (memoryCardGroup.group === selectedTheme) {
       currentCardDeck = memoryCardGroup.memoryCards;
@@ -25,8 +30,8 @@ export function getThemeCards(): void {
   });
 }
 
-function shuffleCards(): void {
-  let cardCount = 30
+function shuffleCards() {
+  let cardCount = 30;
   while (memoryCardsSpots.length < cardCount) {
     let currentCard =
       currentCardDeck[Math.floor(Math.random() * currentCardDeck.length)];
@@ -40,7 +45,7 @@ function shuffleCards(): void {
 
 function setupBoard() {
   let index = 0;
-  cardsContainers.forEach((cardsContainer) => {
+  domUtils.cardsContainers.forEach((cardsContainer) => {
     let imageElement = cardsContainer?.lastElementChild
       ?.firstElementChild as HTMLImageElement;
 
@@ -48,18 +53,27 @@ function setupBoard() {
     imageElement.setAttribute("alt", memoryCardsSpots[index].cardId);
     imageElement.setAttribute("name", memoryCardsSpots[index].cardId);
 
-    cardsContainer.setAttribute("data-name", memoryCardsSpots[index].cardId)
+    cardsContainer.setAttribute("data-name", memoryCardsSpots[index].cardId);
 
     index++;
   });
 }
 
-export function startGame() {
+function createPlayers() {
+  bot = new Bot("bot", selectedDifficulty);
+  player = new Player("player");
+  bot.setdifficultyValues();
+}
+
+export function startGameSetup() {
   getThemeCards();
   shuffleCards();
   setupBoard();
+  createPlayers();
 
-  if (popup) {
-    popup.style.display = "none";
+  if (domUtils.popup) {
+    domUtils.popup.style.display = "none";
   }
+
+  startGame();
 }

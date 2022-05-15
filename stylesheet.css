@@ -11,7 +11,6 @@ body {
   background-position: center;
   width: 100vw;
   height: 100vh;
-  margin-top: 0;
 }
 h1 {
   margin: auto;
@@ -32,6 +31,7 @@ h1 {
   background-color: whitesmoke;
   border-radius: 5px;
   color: #333333;
+  align-items: center;
 }
 
 .popup-backdrop {
@@ -164,6 +164,12 @@ img {
 
 body {
   margin: 0;
+  padding: 0;
+}
+
+html {
+  padding: 0;
+  margin: 0;
 }
 
 .btn {
@@ -174,16 +180,19 @@ body {
   border: none;
 }
 
+h1,
+h3,
 h4 {
   margin: 5px;
 }
 
 .flex-div {
   display: flex;
+  justify-content: space-between;
 }
 
 .flex-div-item {
-  justify-content: space-between;
+  padding: 0;
 }
 
 .flex-div-item > p {
@@ -192,9 +201,11 @@ h4 {
 
 select {
   margin-top: 15px;
+  width: 150px;
+  font-family: Montserrat;
 }
 
-.button {
+.btn {
   height: 39px;
   padding: 10px;
   background: #ff4e00;
@@ -202,4 +213,6 @@ select {
   border-radius: 4px;
   font-weight: 500;
   text-decoration-line: none;
+  margin: 10px 0;
+  font-family: Montserrat;
 }

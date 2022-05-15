@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Memory</title>
     <script defer src="./build/bundle.js"></script>
-    link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,8 +22,13 @@
 
   <body>
     <div class="container">
+      <div>
+        <span id="theme"></span>
+        <span id="difficulty"></span>
+      </div>
       <div class="popup">
-        <h3>Game Settings</h3>
+        <h4 class="winner"></h4>
+        <h3 class="settings">Game Settings</h3>
         <div class="flex-div">
           <div class="flex-div-item">
             <p>Thema:</p>
@@ -43,13 +48,13 @@
           <div class="flex-div-item">
             <select id="botDifficulty">
               <option value="easy">Leicht</option>
-              <option value="middle">Normal</option>
+              <option value="medium">Normal</option>
               <option value="difficult">Schwer</option>
             </select>
           </div>
-          <div>
-            <button class="btn">Spiel starten</button>
-          </div>
+        </div>
+        <div>
+          <button class="btn">Spiel starten</button>
         </div>
       </div>
       <h1>Memory</h1>

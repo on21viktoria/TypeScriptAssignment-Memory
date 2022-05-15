@@ -1,12 +1,4 @@
-import { cardsContainers } from "./gameModule";
-import { MemoryCard } from "./memoryCard";
 import { Player } from "./playerModule";
-
-export enum Difficulty {
-  easy,
-  medium,
-  hard,
-}
 
 export interface Store {
   card: HTMLDivElement;
@@ -14,21 +6,34 @@ export interface Store {
 }
 
 export interface Bot extends Player {
-  difficulty: Difficulty;
   store: Store[];
+  difficulty: string;
 }
 
 export class Bot extends Player implements Bot {
-  choice: HTMLDivElement[] = [];
-  nonSetCards: HTMLDivElement[] = [];
-  difficulty: Difficulty;
+  store: Store[] = [];
   pairs: Store[] = [];
   maxPair: Store[] = [];
+  difficulty: string;
+  difficultyValue: number = 4;
+  choice: HTMLDivElement[] = [];
+  nonSetCards: HTMLDivElement[] = [];
 
-  constructor(difficulty: Difficulty) {
-    super("bot");
-    this.store = [];
+  constructor(name: string, difficulty: string) {
+    super(name);
     this.difficulty = difficulty;
+  }
+
+  setdifficultyValues() {
+    if (this.difficulty === "easy") {
+      this.difficultyValue = 6;
+    }
+    if (this.difficulty === "medium") {
+      this.difficultyValue = 4;
+    }
+    if (this.difficulty === "difficult") {
+      this.difficultyValue = 2;
+    }
   }
 
   getChoice(): HTMLDivElement[] {
@@ -37,10 +42,6 @@ export class Bot extends Player implements Bot {
 
   setChoice(choice: HTMLDivElement[]) {
     this.choice = choice;
-  }
-
-  getFlips(): number {
-    return this.flips;
   }
 
   storeCard(memoryCard: HTMLDivElement): void {
@@ -74,10 +75,11 @@ export class Bot extends Player implements Bot {
     this.findAllPairsInStore();
     if (this.maxPair.length !== 0) {
       this.choice.push(this.maxPair[0].card);
-      if (this.maxPair[1].timesFlipped >= 2) {
+      if (this.maxPair[1].timesFlipped >= this.difficultyValue) {
         this.choice.push(this.maxPair[1].card);
       } else {
-        if (this.random() > 50) {
+        //Auslagern
+        if (this.random(this.maxPair[1]) > 50) {
           this.choice.push(this.maxPair[1].card);
         } else {
           this.getNonSetCards(cardsContainers);
@@ -104,7 +106,8 @@ export class Bot extends Player implements Bot {
           storeElement.card.getAttribute("data-name") ===
           firstCardSelected.getAttribute("data-name")
         ) {
-          if (storeElement.timesFlipped >= 2) {
+          //theoretisch auslagern
+          if (storeElement.timesFlipped >= this.difficultyValue) {
             let card = document.getElementById(
               storeElement.card.id
             ) as HTMLDivElement;
@@ -119,28 +122,32 @@ export class Bot extends Player implements Bot {
     }
   }
 
-  getRandomCardNotFlipped(memoryCards: HTMLDivElement[]) {
-    let firstCardSelected: HTMLDivElement;
-    let secondCardSelected: HTMLDivElement;
-
+  filterCards(memoryCards: HTMLDivElement[]): HTMLDivElement[] {
     let filteredCards = [];
     filteredCards = memoryCards.filter((memoryCard) => {
       return !this.store.find((storedCard) => {
         return storedCard.card.id === memoryCard.id;
       });
     });
+
+    return filteredCards;
+  }
+
+  getRandomCardNotFlipped(memoryCards: HTMLDivElement[]) {
+    let filteredCards = this.filterCards(memoryCards);
+
     if (filteredCards.length !== 0) {
       if (!this.choice[0]) {
-        firstCardSelected =
+        this.choice[0] =
           filteredCards[Math.floor(Math.random() * filteredCards.length)];
-        this.choice.push(firstCardSelected);
-        this.checkForStoreMatch(firstCardSelected);
+        this.checkForStoreMatch(this.choice[0]);
       } else {
+        //Auslagern
         let sameCard = false;
-        while(!sameCard){
-         this.choice[1] =
-          filteredCards[Math.floor(Math.random() * filteredCards.length)];
-          if(this.choice[0].id !== this.choice[1].id){
+        while (!sameCard) {
+          this.choice[1] =
+            filteredCards[Math.floor(Math.random() * filteredCards.length)];
+          if (this.choice[0].id !== this.choice[1].id) {
             sameCard = true;
           }
         }
@@ -158,7 +165,6 @@ export class Bot extends Player implements Bot {
   }
 
   selectCards(): HTMLDivElement[] {
-    console.log(this.choice);
     this.choice.forEach((element) => {
       this.storeCard(element);
       element.classList.add("selected");
@@ -220,8 +226,24 @@ export class Bot extends Player implements Bot {
     flipElement.innerHTML = this.getFlips().toString();
   }
 
-  random(): number {
+  getBonus(card: Store): number {
+    let bonus = 0;
+    if (this.difficulty === "easy") {
+      bonus = card.timesFlipped;
+    }
+    if (this.difficulty === "medium") {
+      bonus = card.timesFlipped * 5;
+    }
+    if (this.difficulty === "difficult") {
+      bonus = card.timesFlipped * 10;
+    }
+    return bonus;
+  }
+
+  random(card: Store): number {
+    let bonus = this.getBonus(card);
+    console.log(bonus);
     let rnd = Math.floor(Math.random() * 100 + 1);
-    return rnd;
+    return rnd + bonus;
   }
 }
