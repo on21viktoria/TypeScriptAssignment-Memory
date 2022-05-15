@@ -74,6 +74,5 @@ export function startGameSetup() {
   if (domUtils.popup) {
     domUtils.popup.style.display = "none";
   }
-
   startGame();
 }

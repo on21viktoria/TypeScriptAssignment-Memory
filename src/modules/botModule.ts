@@ -232,7 +232,6 @@ export class Bot extends Player implements IBot {
 
   random(card: IStore): number {
     let bonus = this.getBonus(card);
-    console.log(bonus);
     let rnd = Math.floor(Math.random() * 100 + 1);
     return rnd + bonus;
   }

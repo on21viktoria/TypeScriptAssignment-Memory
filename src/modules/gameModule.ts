@@ -2,11 +2,12 @@ import { Bot } from "./botModule";
 import { IPlayer, Player } from "./playerModule";
 import * as domUtils from "./../domUtils";
 import * as styling from "./stylingModule";
-import { bot, player } from "./gameSetupModule";
-import { toEditorSettings } from "typescript";
+import * as gameSetupModule from "./gameSetupModule";
 
 let currentPlayer: Player;
 let selectedCards: HTMLDivElement[] = [];
+const bot = gameSetupModule.bot;
+const player = gameSetupModule.player;
 
 export function startGame() {
   domUtils.cardsContainers.forEach((cardsContainer) => {
@@ -91,9 +92,6 @@ function checkWinner() {
   }
   if (bot.getScore() === player.getScore()) {
     showWinner();
-  }
-  if (domUtils.popup) {
-    domUtils.popup.style.display = "block";
   }
 }
 
