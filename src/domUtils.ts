@@ -21,3 +21,8 @@ export const themeSelector = document.getElementById(
 export const difficultySelector = document.getElementById(
   "botDifficulty"
 ) as HTMLSelectElement;
+export const winnerPopup =
+  document.querySelector<HTMLDivElement>(".winner-popup");
+export const winnerText = document.querySelector(
+  ".winner"
+) as HTMLHeadingElement;

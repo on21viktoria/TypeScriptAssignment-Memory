@@ -1,19 +1,21 @@
-import { Player } from "./playerModule";
+import { Player, IPlayer } from "./playerModule";
+import * as styling from "./stylingModule";
+import { botFlip } from "../domUtils";
 
-export interface Store {
+export interface IStore {
   card: HTMLDivElement;
   timesFlipped: number;
 }
 
-export interface Bot extends Player {
-  store: Store[];
+export interface IBot extends IPlayer {
+  store: IStore[];
   difficulty: string;
 }
 
-export class Bot extends Player implements Bot {
-  store: Store[] = [];
-  pairs: Store[] = [];
-  maxPair: Store[] = [];
+export class Bot extends Player implements IBot {
+  store: IStore[];
+  pairs: IStore[] = [];
+  maxPair: IStore[] = [];
   difficulty: string;
   difficultyValue: number = 4;
   choice: HTMLDivElement[] = [];
@@ -21,6 +23,7 @@ export class Bot extends Player implements Bot {
 
   constructor(name: string, difficulty: string) {
     super(name);
+    this.store = [];
     this.difficulty = difficulty;
   }
 
@@ -78,28 +81,22 @@ export class Bot extends Player implements Bot {
       if (this.maxPair[1].timesFlipped >= this.difficultyValue) {
         this.choice.push(this.maxPair[1].card);
       } else {
-        //Auslagern
         if (this.random(this.maxPair[1]) > 50) {
           this.choice.push(this.maxPair[1].card);
         } else {
-          this.getNonSetCards(cardsContainers);
+          this.getCardsNotSet(cardsContainers);
         }
       }
     } else {
-      this.getNonSetCards(cardsContainers);
+      this.getCardsNotSet(cardsContainers);
     }
   }
 
-  getNonSetCards(cardsContainers: NodeListOf<HTMLDivElement>) {
-    cardsContainers.forEach((cardsContainer) => {
-      if (!cardsContainer.classList.contains("set")) {
-        this.nonSetCards.push(cardsContainer);
-      }
-    });
-    this.getRandomCardNotFlipped(this.nonSetCards);
+  getCardsNotSet(cardsContainers: NodeListOf<HTMLDivElement>) {
+    this.getRandomCardNotFlipped(this.getNonSetCards(cardsContainers));
   }
 
-  checkForStoreMatch(firstCardSelected: HTMLDivElement) {
+  checkForPair(firstCardSelected: HTMLDivElement) {
     this.store.forEach((storeElement) => {
       if (storeElement.card.id !== firstCardSelected.id) {
         if (
@@ -135,33 +132,31 @@ export class Bot extends Player implements Bot {
 
   getRandomCardNotFlipped(memoryCards: HTMLDivElement[]) {
     let filteredCards = this.filterCards(memoryCards);
-
     if (filteredCards.length !== 0) {
       if (!this.choice[0]) {
         this.choice[0] =
           filteredCards[Math.floor(Math.random() * filteredCards.length)];
-        this.checkForStoreMatch(this.choice[0]);
+        this.checkForPair(this.choice[0]);
       } else {
-        //Auslagern
-        let sameCard = false;
-        while (!sameCard) {
-          this.choice[1] =
-            filteredCards[Math.floor(Math.random() * filteredCards.length)];
-          if (this.choice[0].id !== this.choice[1].id) {
-            sameCard = true;
-          }
-        }
+        this.checkForSameCard(filteredCards);
       }
     } else {
       this.getRandomNonSetCard(memoryCards);
     }
   }
 
-  getRandomNonSetCard(memoryCards: HTMLDivElement[]) {
-    let randomCard =
-      memoryCards[Math.floor(Math.random() * memoryCards.length)];
+  checkForSameCard(cards: HTMLDivElement[]) {
+    let sameCard = false;
+    while (!sameCard) {
+      this.choice[1] = cards[Math.floor(Math.random() * cards.length)];
+      if (this.choice[0].id !== this.choice[1].id) {
+        sameCard = true;
+      }
+    }
+  }
 
-    this.choice[1] = randomCard;
+  getRandomNonSetCard(memoryCards: HTMLDivElement[]) {
+    this.checkForSameCard(memoryCards);
   }
 
   selectCards(): HTMLDivElement[] {
@@ -218,15 +213,10 @@ export class Bot extends Player implements Bot {
 
   setFlipCards() {
     this.setFlips(this.getFlips() + 1);
-
-    let flipElement: HTMLHeadingElement;
-    flipElement = document.querySelector(
-      ".flips-number-bot"
-    ) as HTMLHeadingElement;
-    flipElement.innerHTML = this.getFlips().toString();
+    styling.setFlips(this.getFlips(), botFlip);
   }
 
-  getBonus(card: Store): number {
+  getBonus(card: IStore): number {
     let bonus = 0;
     if (this.difficulty === "easy") {
       bonus = card.timesFlipped;
@@ -240,10 +230,21 @@ export class Bot extends Player implements Bot {
     return bonus;
   }
 
-  random(card: Store): number {
+  random(card: IStore): number {
     let bonus = this.getBonus(card);
     console.log(bonus);
     let rnd = Math.floor(Math.random() * 100 + 1);
     return rnd + bonus;
+  }
+
+  getNonSetCards(
+    cardsContainers: NodeListOf<HTMLDivElement>
+  ): HTMLDivElement[] {
+    cardsContainers.forEach((cardsContainer) => {
+      if (!cardsContainer.classList.contains("set")) {
+        this.nonSetCards.push(cardsContainer);
+      }
+    });
+    return this.nonSetCards;
   }
 }

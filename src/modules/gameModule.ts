@@ -12,10 +12,10 @@ export function startGame() {
   domUtils.cardsContainers.forEach((cardsContainer) => {
     cardsContainer.addEventListener("click", flipCard);
   });
-
   currentPlayer = player;
 }
 
+//entnommen aus folgendem Tutorial: https://www.youtube.com/watch?v=ZniVgo8U7ek&t=1334s
 function flipCard(this: HTMLDivElement) {
   setFlips();
   this.removeEventListener("click", flipCard);
@@ -25,10 +25,12 @@ function flipCard(this: HTMLDivElement) {
   selectedCards.push(this);
 
   if (selectedCards.length === 2) {
+    removeEventListenerForAll();
     checkforMatch(selectedCards);
   }
 }
 
+//entnommen und abgewandelt aus folgendem Tutorial: https://www.youtube.com/watch?v=ZniVgo8U7ek&t=1334s
 function checkforMatch(selectedcards: HTMLDivElement[]) {
   if (
     selectedcards[0].getAttribute("data-name") ===
@@ -42,14 +44,7 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
     });
     setScore();
     selectedCards = [];
-    if (currentPlayer === bot && !checkBoard()) {
-      domUtils.playerTurn.classList.add("botTurn");
-      domUtils.playerTurn.classList.remove("playerTurn");
-      domUtils.playerTurn.innerHTML = "Bot's turn";
-      setTimeout(() => {
-        botTurn();
-      }, 2000);
-    }
+    checkNextPlayer();
   } else {
     setTimeout(() => {
       selectedcards.forEach((selectedcard) => {
@@ -62,6 +57,17 @@ function checkforMatch(selectedcards: HTMLDivElement[]) {
   }
 }
 
+function checkNextPlayer() {
+  if (currentPlayer === bot && !checkBoard()) {
+    styling.changeMessageBoxToBot();
+    setTimeout(() => {
+      botTurn();
+    }, 2000);
+  }
+  else {
+    addEventListenerToNonSetCards();
+  }
+}
 function checkBoard(): boolean {
   let cards = [...domUtils.cardsContainers];
   let noCards = [];
@@ -92,16 +98,15 @@ function checkWinner() {
 }
 
 function showWinner(winner?: IPlayer) {
-  if (domUtils.popup) {
-    domUtils.popup.style.display = "block";
+  if (domUtils.winnerPopup) {
+    domUtils.winnerPopup.style.display = "block";
   }
-  const settings = document.querySelector(".settings") as HTMLHeadingElement;
   if (winner === bot) {
-    settings.innerHTML = "Bot wins!";
+    domUtils.winnerText.innerHTML = "Bot wins!";
   } else if (winner === player) {
-    settings.innerHTML = "You win!";
+    domUtils.winnerText.innerHTML = "You win!";
   } else {
-    settings.innerHTML = "Draw";
+    domUtils.winnerText.innerHTML = "Draw";
   }
   domUtils.button.innerHTML = "Replay";
 }
@@ -137,13 +142,28 @@ function changePlayer() {
   if (!currentPlayer) {
     currentPlayer = player;
   } else if (currentPlayer === player) {
+    removeEventListenerForAll();
     currentPlayer = bot;
     styling.changeMessageBoxToBot();
     botTurn();
   } else if (currentPlayer === bot) {
     currentPlayer = player;
+    addEventListenerToNonSetCards();
     styling.changeMessageBoxToPlayer();
   }
+}
+
+function removeEventListenerForAll() {
+  domUtils.cardsContainers.forEach((cardsContainer) => {
+    cardsContainer.removeEventListener("click", flipCard);
+  });
+}
+
+function addEventListenerToNonSetCards() {
+  let cards = bot.getNonSetCards(domUtils.cardsContainers);
+  cards.forEach((card) => {
+    card.addEventListener("click", flipCard);
+  });
 }
 
 function botTurn() {
